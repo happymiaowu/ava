@@ -268,6 +268,7 @@ class AvaEnv(gym.Env):
             for act in action_list.get_type2action()[RallyCancel]:
                 rally = self.get_rally_dict()[act.get_rally_id()]
                 marches = act.do(rally, self.get_hive_dict())
+                print(marches)
                 self.march.extend(marches)
                 self.logs.write('Rally %s cancelled, marches back: %s\n' % (act.get_rally_id(), marches))
 

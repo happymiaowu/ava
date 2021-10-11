@@ -16,13 +16,14 @@ from typing import List, Dict
 from gym_foo.model.action.recall_march import RecallMarch
 from gym_foo.model.march import March
 from gym_foo.model.action.join_rally import JoinRally
+from gym_foo.model.action.rally_cancel import RallyCancel
 
 class RandomAgent(Agent):
 
     def __init__(self, team):
         super().__init__(team)
 
-    valid_action = ['attack', 'reinforce', 'rally', 'scout', 'speedup', 'teleport', 'recall_march', 'recall_occupied', 'join_rally']
+    valid_action = ['attack', 'reinforce', 'rally', 'scout', 'speedup', 'teleport', 'recall_march', 'recall_occupied', 'join_rally', 'cancel_rally']
 
     # 行军数量是否满
     def is_march_num_full(self, hive):
@@ -173,10 +174,16 @@ class RandomAgent(Agent):
                     troops_num=random.randint(1, min(hive.get_max_troops_num(), hive.get_troops_num()))
                 ))
 
-
-
-
-
+            if random_action == 'cancel_rally':
+                if len(detail.get_self_rallies()) == 0:
+                    continue
+                target = random.choice(detail.get_self_rallies())
+                if target.get_hive_id() != hive.get_id():
+                    continue
+                action_list.append(RallyCancel(
+                    hive_id=hive.get_id(),
+                    rally_id=target.get_id()
+                ))
 
         return ActionList(team=self._team, action_list=action_list)
 

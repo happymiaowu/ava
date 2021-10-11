@@ -13,7 +13,7 @@ class RallyCancel(Action):
         return self._rally_id
 
     def do(self, rally: RallyWaiting, hive_dict: Dict[str, Hive]):
-        rally.cancel(hive_dict)
+        return rally.cancel(hive_dict)
 
     def __repr__(self):
         return str({

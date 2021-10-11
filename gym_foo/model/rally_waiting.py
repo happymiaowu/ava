@@ -79,3 +79,13 @@ class RallyWaiting():
 
         self._pending_times -= 1
         return None
+
+    def __repr__(self):
+        return str({
+            'id': self._id,
+            'hive_id': self._hive_id,
+            'troops': self._troops,
+            'target_type': self._target_type,
+            'target_id': self._target_id,
+            'pending_times': self._pending_times
+        })
