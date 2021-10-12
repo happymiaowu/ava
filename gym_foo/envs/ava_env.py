@@ -2,6 +2,7 @@ import gym
 from gym import spaces
 import numpy as np
 import random
+from gym.envs.classic_control import rendering
 import uuid
 from gym_foo.model.tower import Tower
 from gym_foo.model.hive import Hive
@@ -533,7 +534,6 @@ class AvaEnv(gym.Env):
 
 
         if self.viewer is None:
-            from gym.envs.classic_control import rendering
             self.viewer = rendering.Viewer(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
             # 创建网格世界
             self.lines = []
@@ -617,6 +617,20 @@ class AvaEnv(gym.Env):
                 self.tower_view[int(tower.get_id())].set_color(*self.TEAM_0_COLOR)
             else:
                 self.tower_view[int(tower.get_id())].set_color(*self.TEAM_1_COLOR)
+
+        # 军队
+        for march in self.march:
+            line_color = self.TEAM_0_COLOR if march.get_hive_id().split('_')[0] == '0' else self.TEAM_1_COLOR
+            march_line = rendering.Line(
+                self.grid2cord(*march.get_start_cord()), self.grid2cord(*march.get_target_cord())
+            )
+            march_line.set_color(*line_color)
+            self.viewer.add_onetime(march_line)
+
+            march_point = rendering.make_circle(self.GRID_WIDTH / 8.)
+            march_point.add_attr(rendering.Transform(translation=(self.grid2cord(*march.get_now_cord()))))
+            march_point.set_color(*line_color)
+            self.viewer.add_onetime(march_point)
 
         # print(self.viewer, type(self.viewer))
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
