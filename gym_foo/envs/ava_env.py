@@ -24,18 +24,29 @@ from gym_foo.model.action.scout import Scout
 from gym_foo.model.action.reinforce import Reinforce
 from gym_foo.model.rally_waiting import RallyWaiting
 from gym_foo.model.action.rally_cancel import RallyCancel
+import pyglet
+
+class DrawText:
+    def __init__(self, label:pyglet.text.Label):
+        self.label=label
+    def render(self):
+        self.label.draw()
 
 
 class AvaEnv(gym.Env):
     metadata = {
         'render.modes': ['human', 'rgb_array'],
-        'video.frames_per_second': 2
+        'video.frames_per_second': 1
     }
 
     SCREEN_WIDTH = 800
     SCREEN_HEIGHT = 800
 
     GRID_WIDTH = 50
+
+    TEAM_0_COLOR = (0,1,0)
+    TEAM_1_COLOR = (0,0,1)
+    TOWER_COLOR = (1, 0.9, 0)
 
     def __init__(self):
 
@@ -540,7 +551,7 @@ class AvaEnv(gym.Env):
                 tmp_view = rendering.make_circle(self.GRID_WIDTH / 2. if tower.is_wonder() else self.GRID_WIDTH / 3.)
 
                 tmp_view.add_attr(rendering.Transform(translation=(self.grid2cord(*tower.get_cord()))))
-                tmp_view.set_color(1, 0.9, 0)
+                tmp_view.set_color(*self.TOWER_COLOR)
                 self.tower_view.append(tmp_view)
 
             # 建城堡
@@ -550,13 +561,13 @@ class AvaEnv(gym.Env):
                 tmp_view_list = []
                 tmp_trans_list = []
                 for hive in hives:
-                    tmp_view = rendering.make_circle(self.GRID_WIDTH / 3.)
+                    tmp_view = rendering.make_circle(self.GRID_WIDTH / 4.)
                     tmp_trans = rendering.Transform(translation=(self.grid2cord(*hive.get_cord())))
                     tmp_view.add_attr(tmp_trans)
                     if hive.get_id().split('_')[0] == '0':
-                        tmp_view.set_color(0,0,0)
+                        tmp_view.set_color(*self.TEAM_0_COLOR)
                     else:
-                        tmp_view.set_color(0,0,1)
+                        tmp_view.set_color(*self.TEAM_1_COLOR)
                     tmp_view_list.append(tmp_view)
                     tmp_trans_list.append(tmp_trans)
                 self.hive_view.append(tmp_view_list)
@@ -569,11 +580,43 @@ class AvaEnv(gym.Env):
                 for view in views:
                     self.viewer.add_geom(view)
 
+            self.score_labels_view = [
+                pyglet.text.Label(
+                    "team_0 score: 0000",
+                    font_size=18,
+                    anchor_x='left',
+                    anchor_y='top',
+                    x=30, y=750,
+                    color=(0, 255, 0, 255)
+                ), pyglet.text.Label(
+                    "team_1 score: 0000",
+                    font_size=18,
+                    anchor_x='left',
+                    anchor_y='top',
+                    x=400, y=750,
+                    color=(0, 0, 255, 255)
+                )
+            ]
+
+            for view in self.score_labels_view:
+                self.viewer.add_geom(DrawText(view))
+
         if self.map is None: return None
 
         for hive in self.get_hive_dict().values():
             team_id, hive_id = hive.get_id().split('_')
             self.hive_trans[int(team_id)][int(hive_id)].set_translation(*self.grid2cord(*hive.get_cord()))
+
+        for team_id in range(2):
+            self.score_labels_view[team_id].text = 'team_%d score: %04d' %(team_id, self.score[team_id])
+
+        for tower in self.tower:
+            if tower.who_occupied() is None:
+                self.tower_view[int(tower.get_id())].set_color(*self.TOWER_COLOR)
+            elif tower.who_occupied() == 0:
+                self.tower_view[int(tower.get_id())].set_color(*self.TEAM_0_COLOR)
+            else:
+                self.tower_view[int(tower.get_id())].set_color(*self.TEAM_1_COLOR)
 
         # print(self.viewer, type(self.viewer))
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
