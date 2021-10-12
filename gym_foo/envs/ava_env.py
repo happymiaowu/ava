@@ -139,7 +139,7 @@ class AvaEnv(gym.Env):
 
     def initial_state(self):
         return self.map, \
-               self.score, \
+               0, \
                False, \
                BattleFieldTotal(
                    width=self.map_width,
@@ -150,7 +150,8 @@ class AvaEnv(gym.Env):
                    round_left=self.round_left,
                    scout_reports=self.scout_reports,
                    battle_reports=self.battle_reports,
-                   rallies=self.rally
+                   rallies=self.rally,
+                   score=self.score
                )
 
     def teleport_recall(self, hive_id):
@@ -451,7 +452,7 @@ class AvaEnv(gym.Env):
 
         print(self.round_left)
         if self.round_left == 0:
-            return self.map, self.score, True, BattleFieldTotal(
+            return self.map, 0, True, BattleFieldTotal(
                 width=self.map_width,
                 height=self.map_height,
                 marches=self.march,
@@ -460,13 +461,14 @@ class AvaEnv(gym.Env):
                 round_left=self.round_left,
                 scout_reports=self.scout_reports,
                 battle_reports=self.battle_reports,
-                rallies=self.rally
+                rallies=self.rally,
+                score=self.score
             )
 
         self.round_left -= 1
 
         return self.map, \
-               self.score, \
+               0, \
                False, \
                BattleFieldTotal(
                    width=self.map_width,
@@ -477,7 +479,8 @@ class AvaEnv(gym.Env):
                    round_left=self.round_left,
                    scout_reports=self.scout_reports,
                    battle_reports=self.battle_reports,
-                   rallies=self.rally
+                   rallies=self.rally,
+                   score=self.score
                )
         '''
         # 系统当前状态
@@ -531,39 +534,46 @@ class AvaEnv(gym.Env):
                 line.set_color(0, 0, 0)
                 self.viewer.add_geom(line)
 
-            self.wonder_view = rendering.make_circle(self.GRID_WIDTH / 2.)
-            self.wonder_trans = rendering.Transform(translation=(self.grid2cord(6, 6)))
-            self.wonder_view.add_attr(self.wonder_trans)
-            self.wonder_view.set_color(0, 0, 0)
-            # 创建第一个骷髅
-            self.kulo1 = rendering.make_circle(40)
-            self.circletrans = rendering.Transform(translation=(140, 150))
-            self.kulo1.add_attr(self.circletrans)
-            self.kulo1.set_color(0, 0, 0)
-            # 创建第二个骷髅
-            self.kulo2 = rendering.make_circle(40)
-            self.circletrans = rendering.Transform(translation=(460, 150))
-            self.kulo2.add_attr(self.circletrans)
-            self.kulo2.set_color(0, 0, 0)
-            # 创建金条
-            self.gold = rendering.make_circle(40)
-            self.circletrans = rendering.Transform(translation=(300, 150))
-            self.gold.add_attr(self.circletrans)
-            self.gold.set_color(1, 0.9, 0)
-            # 创建机器人
-            self.robot = rendering.make_circle(30)
-            self.robotrans = rendering.Transform()
-            self.robot.add_attr(self.robotrans)
-            self.robot.set_color(0.8, 0.6, 0.4)
+            # 建塔
+            self.tower_view = []
+            for tower in self.tower:
+                tmp_view = rendering.make_circle(self.GRID_WIDTH / 2. if tower.is_wonder() else self.GRID_WIDTH / 3.)
 
-            self.viewer.add_geom(self.wonder_view)
-            self.viewer.add_geom(self.kulo1)
-            self.viewer.add_geom(self.kulo2)
-            self.viewer.add_geom(self.gold)
-            self.viewer.add_geom(self.robot)
+                tmp_view.add_attr(rendering.Transform(translation=(self.grid2cord(*tower.get_cord()))))
+                tmp_view.set_color(1, 0.9, 0)
+                self.tower_view.append(tmp_view)
+
+            # 建城堡
+            self.hive_view = []
+            self.hive_trans = []
+            for hives in self.hives:
+                tmp_view_list = []
+                tmp_trans_list = []
+                for hive in hives:
+                    tmp_view = rendering.make_circle(self.GRID_WIDTH / 3.)
+                    tmp_trans = rendering.Transform(translation=(self.grid2cord(*hive.get_cord())))
+                    tmp_view.add_attr(tmp_trans)
+                    if hive.get_id().split('_')[0] == '0':
+                        tmp_view.set_color(0,0,0)
+                    else:
+                        tmp_view.set_color(0,0,1)
+                    tmp_view_list.append(tmp_view)
+                    tmp_trans_list.append(tmp_trans)
+                self.hive_view.append(tmp_view_list)
+                self.hive_trans.append(tmp_trans_list)
+
+            for view in self.tower_view:
+                self.viewer.add_geom(view)
+
+            for views in self.hive_view:
+                for view in views:
+                    self.viewer.add_geom(view)
 
         if self.map is None: return None
-        # self.robotrans.set_translation(self.x[self.state-1],self.y[self.state-1])
-        # self.robotrans.set_translation(self.x[self.state - 1], self.y[self.state - 1])
 
+        for hive in self.get_hive_dict().values():
+            team_id, hive_id = hive.get_id().split('_')
+            self.hive_trans[int(team_id)][int(hive_id)].set_translation(*self.grid2cord(*hive.get_cord()))
+
+        # print(self.viewer, type(self.viewer))
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')

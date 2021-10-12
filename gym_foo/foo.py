@@ -20,7 +20,7 @@ if __name__ == "__main__":
     # s0 = 1
     # grid.setAction(s0)
     # 对训练好的策略进行测试
-    # grid = wrappers.Monitor(grid, './robotfindgold', force=True)  # 记录回放动画
+    grid = wrappers.Monitor(grid, './videos', force=True)  # 记录回放动画
     # 随机初始化，寻找金币的路径
     '''
     for i in range(20):

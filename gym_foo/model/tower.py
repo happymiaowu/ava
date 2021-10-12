@@ -29,6 +29,9 @@ class Tower():
     def get_id(self):
         return self._id
 
+    def is_wonder(self):
+        return self._is_wonder
+
     # 查询谁占领
     def who_occupied(self):
         if not self._occupied:

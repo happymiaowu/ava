@@ -2,7 +2,7 @@ from gym_foo.model.march import March
 
 class BattleFieldTotal():
 
-    def __init__(self, width, height, marches, towers, hives, round_left, battle_reports, scout_reports, rallies):
+    def __init__(self, width, height, marches, towers, hives, round_left, battle_reports, scout_reports, rallies, score):
         self._width = width
         self._height = height
         self._marches = marches
@@ -12,6 +12,10 @@ class BattleFieldTotal():
         self._battle_reports = battle_reports
         self._scout_reports = scout_reports
         self._rallies = rallies
+        self._score = score
+
+    def get_score(self):
+        return self._score
 
     def get_width(self):
         return self._width

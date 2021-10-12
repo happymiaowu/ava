@@ -14,7 +14,8 @@ class BattleField(BattleFieldTotal):
             round_left=battle_field_total.get_round_left(),
             battle_reports=battle_field_total.get_battle_reports(),
             scout_reports=battle_field_total.get_scout_reports(),
-            rallies=battle_field_total.get_rallies()
+            rallies=battle_field_total.get_rallies(),
+            score=battle_field_total.get_score()
         )
         self._team = team
         self._other_team = 1 - int(team)
@@ -30,6 +31,12 @@ class BattleField(BattleFieldTotal):
     def get_marches(self):
         print('closed...')
         return None
+
+    def get_self_score(self):
+        return self._score[self._team]
+
+    def get_opp_score(self):
+        return self._score[self._other_team]
 
     def get_self_marches(self):
         marches = []

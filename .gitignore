@@ -1,3 +1,5 @@
 gym_foo.egg-info
 venv
 .idea
+gym_foo/logs/*
+gym_foo/videos/*
