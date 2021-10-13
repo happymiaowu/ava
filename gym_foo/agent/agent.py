@@ -28,7 +28,6 @@ class Agent():
             if hive.get_cord() is not None and hive.get_using_march_num() == 0 and score[self._team] == 0:
                 action_list.append(Attack(
                     hive_id=hive.get_id(),
-                    start_cord=hive.get_cord(),
                     target_cord=detail.get_towers()[0].get_cord(),
                     troops_num=hive.get_troops_num() // hive.get_max_march_num(),
                     target_type=Attack.TARGET_TYPE_TOWER,
@@ -37,7 +36,6 @@ class Agent():
             break
 
         for hive in detail.get_self_hives():
-            print(hive.get_cord(), hive.get_using_march_num())
             if hive.get_cord() is not None and hive.get_using_march_num() == 0:
                 action_list.append(Scout(hive_id=hive.get_id(), target_type=Scout.TARGET_TYPE_HIVE, target_id='1_0'))
             break

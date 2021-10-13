@@ -5,8 +5,8 @@ from gym import wrappers
 from gym_foo.agent.agent import Agent
 from gym_foo.agent.random_agent import RandomAgent
 from gym_foo.model.battlefield_detail import BattleField
-
-
+from gym_foo.agent.q_learning_agent_v2 import QLearnAgent_V2
+from gym_foo.agent.attack_agent import AttackTowerAgent
 
 
 
@@ -57,8 +57,8 @@ if __name__ == "__main__":
     grid.render()
     time.sleep(sleeptime)
     is_start = True
-    agent_1 = RandomAgent(team=0)
-    agent_2 = RandomAgent(team=1)
+    agent_1 = QLearnAgent_V2(team=0)
+    agent_2 = AttackTowerAgent(team=1)
     while True:
         if is_start:
             state, score, is_terminate, detail = grid.initial_state()
@@ -75,7 +75,10 @@ if __name__ == "__main__":
             battle_field_total=detail,
             team=1
         )
-        action_list = [agent_1.generate_action(state, score, detail_for_agent0), agent_2.generate_action(state, score, detail_for_agent1)]
+
+        _, act1 = agent_1.generate_action(state, score, detail_for_agent0)
+        act2 = agent_2.generate_action(state, score, detail_for_agent1)
+        action_list = [act1, act2]
         state, score, is_terminate, detail = grid.step(action_list)
         if True == is_terminate:
             print('Over, score:', score, detail)
@@ -85,6 +88,6 @@ if __name__ == "__main__":
             break
 
         else:
-            print('Round, score:', score, detail)
+            print('Round, score:', detail.get_score())
 
 

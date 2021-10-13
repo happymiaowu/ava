@@ -14,9 +14,8 @@ def count_next_cord(start_cord, end_cord, speed):
     during = d / speed
     return ((end_cord[0] - start_cord[0]) / during + start_cord[0], (end_cord[1] - start_cord[1]) / during + start_cord[1])
 
-def check_cord_valid(cord):
-    # TODO
-    return True
+def check_cord_valid(cord, empty_cord):
+    return cord in empty_cord
 
 
 def is_same_team(hive_id1, hive_id2):

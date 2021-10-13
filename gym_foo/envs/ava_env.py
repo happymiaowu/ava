@@ -199,7 +199,7 @@ class AvaEnv(gym.Env):
         self.logs.write('Agent1 Action: %s\n' % str(action_lists[1]))
         ### 行动
         # 召回行军
-        print('Recall March...')
+
         for action_list in action_lists:
             for act in action_list.get_type2action()[RecallMarch]:
                 for march in self.march:
@@ -207,7 +207,7 @@ class AvaEnv(gym.Env):
                         continue
                     act.do(march, hive=self.get_hive_dict()[march.get_hive_id()])
                     self.logs.write('March %s recall\n' % march.get_march_id())
-        print('Recall Occupied...')
+
         # 召回驻军
         for action_list in action_lists:
             for act in action_list.get_type2action()[RecallOccupied]:
@@ -220,7 +220,6 @@ class AvaEnv(gym.Env):
                     self.march.append(march)
                     self.logs.write('Hive %s reinforce tower %s recall, march: %s\n' % (act.get_hive_id(), act.get_target_id(), march))
 
-        print('Counting Score...')
         ### 结算这一秒情况
         # 评分
         for tower in self.tower:
@@ -231,7 +230,6 @@ class AvaEnv(gym.Env):
             self.score[occupied_team] += tower.get_score_per_round()
             self.logs.write('Tower %s occupied by team %s, score increase %s\n' % (str(tower.get_id()), str(occupied_team), str(tower.get_score_per_round())))
 
-        print('Speedup...')
         # 加速
         for action_list in action_lists:
             for act in action_list.get_type2action()[SpeedUp]:
@@ -241,7 +239,6 @@ class AvaEnv(gym.Env):
                     act.do(march)
                     self.logs.write('March %s speedup, speed now: %s\n' % (march.get_march_id(), march.get_speed()))
 
-        print('Attack...')
         # 开始行军
         # 进攻
         for action_list in action_lists:
@@ -267,7 +264,6 @@ class AvaEnv(gym.Env):
                     self.logs.write('Hive %s reinforce tower %s, march: %s\n' % (hive_id, target_id, rein_march))
 
 
-        print('Rally...')
         # 发起集结
         for action_list in action_lists:
             for act in action_list.get_type2action()[Rally]:
@@ -281,18 +277,15 @@ class AvaEnv(gym.Env):
             for act in action_list.get_type2action()[RallyCancel]:
                 rally = self.get_rally_dict()[act.get_rally_id()]
                 marches = act.do(rally, self.get_hive_dict())
-                print(marches)
                 self.march.extend(marches)
                 self.logs.write('Rally %s cancelled, marches back: %s\n' % (act.get_rally_id(), marches))
 
-        print('Scout...')
         # 侦查
         for action_list in action_lists:
             for act in action_list.get_type2action()[Scout]:
                 hive_id = act.get_hive_id()
                 target_type = act.get_target_type()
                 target_id = act.get_target_id()
-                print(target_id)
                 if target_type == Scout.TARGET_TYPE_HIVE:
                     self.get_hive_dict()[hive_id].attack(0)
                     march = act.do(scout_hive=self.get_hive_dict()[hive_id], target_hive=self.get_hive_dict()[target_id])
@@ -305,18 +298,19 @@ class AvaEnv(gym.Env):
                     self.logs.write('Hive %s scout tower %s, march: %s\n' % (hive_id, target_id, march))
 
 
-        print('Teleport...')
         # 传送
         for action_list in action_lists:
             for act in action_list.get_type2action()[Teleport]:
                 hive_id = act.get_hive_id()
                 start_cord = self.get_hive_dict()[hive_id].get_cord()
-                act.do(self.get_hive_dict()[hive_id])
-                self.teleport_recall(hive_id=hive_id)
-                self.logs.write('Hive %s teleport from %s to %s.\n' % (hive_id, start_cord, act.get_new_cord()))
+                try:
+                    act.do(self.get_hive_dict()[hive_id], self.get_empty_cord())
+                    self.teleport_recall(hive_id=hive_id)
+                    self.logs.write('Hive %s teleport from %s to %s.\n' % (hive_id, start_cord, act.get_new_cord()))
+                except Exception:
+                    pass
 
 
-        print('March...')
         # 行军
         for march in self.march:
             march.next_round()
@@ -345,14 +339,11 @@ class AvaEnv(gym.Env):
             for hive in hives:
                 hive.next_round()
 
-        print('March Counting...')
         # 行军结算
         new_march_list = []
         self.march = sorted(self.march, key=lambda x: x.get_type())
-        print(self.march)
         lose_hive_id = []
         for march in self.march:
-            print(march.get_target_cord(), march.get_now_cord())
             # 还未走到
             if march.get_target_cord() != march.get_now_cord():
                 new_march_list.append(march)
@@ -360,12 +351,10 @@ class AvaEnv(gym.Env):
             is_deal = False
             # 战斗地方为塔
             target_type, target_id = march.get_target_detail()
-            print(target_type, target_id)
             if target_type == March.TARGET_TYPE_TOWER:
                 if march.get_type() == March.TYPE_ATTACK:
                     is_deal = True
                     tower = self.tower[int(target_id)]
-                    print(march)
                     _march, _report = battle.occupied_tower(tower, march, self.get_hive_dict())
                     new_march_list.extend(_march)
                     if _report is not None:
@@ -494,32 +483,7 @@ class AvaEnv(gym.Env):
                    rallies=self.rally,
                    score=self.score
                )
-        '''
-        # 系统当前状态
-        state = self.state
-        if state in self.terminate_states:
-            return state, 0, True, {}
-        key = "%d_%s" % (state, action)  # 将状态和动作组成字典的键值
 
-        # 状态转移
-        if key in self.t:
-            next_state = self.t[key]
-        else:
-            next_state = state
-        self.state = next_state
-
-        is_terminal = False
-
-        if next_state in self.terminate_states:
-            is_terminal = True
-
-        if key not in self.rewards:
-            r = 0.0
-        else:
-            r = self.rewards[key]
-
-        return next_state, r, is_terminal, {}
-        '''
 
     def reset(self):
         print('reset')
@@ -632,5 +596,4 @@ class AvaEnv(gym.Env):
             march_point.set_color(*line_color)
             self.viewer.add_onetime(march_point)
 
-        # print(self.viewer, type(self.viewer))
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')

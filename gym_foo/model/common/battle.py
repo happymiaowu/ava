@@ -15,7 +15,6 @@ def battle(troops_list1: TroopsList, troops_list2: TroopsList, header_buff1: int
     troops_power2 = troops_num2 * header_buff2
 
     is_first_win = troops_power1 >= troops_power2
-    print(troops_num1, troops_num2, header_buff1, header_buff2, '~')
     left_rate_1 = troops_power1 / (troops_power1 + troops_power2)
     left_rate_2 = troops_power2 / (troops_power1 + troops_power2)
     troops_left1 = []
@@ -104,7 +103,6 @@ def attack_hive(hive: Hive, march:March, hive_dict: Dict[str, Hive]):
         hive.set_troops_num(troops_list=hive_left)
         lose_troops = march_left.get_troops_list()
     else:
-        print(type(march), march, hive_left)
         march.set_troops_list(march_left)
         lose_troops = hive_left.get_troops_list()
     lose_march_list = []

@@ -6,8 +6,8 @@ class Teleport(Action):
         super().__init__(hive_id)
         self._new_cord = new_cord
 
-    def do(self, hive):
-        hive.teleport(new_cord=self._new_cord)
+    def do(self, hive, empty_cord):
+        hive.teleport(new_cord=self._new_cord, empty_cord=empty_cord)
 
     def get_new_cord(self):
         return self._new_cord

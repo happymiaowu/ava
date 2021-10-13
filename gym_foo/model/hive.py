@@ -7,7 +7,7 @@ import uuid
 from gym_foo.model.hide_hive import HideHive
 from gym_foo.model.troops_list import TroopsList
 from gym_foo.model.report.scout_hive_report import ScoutHiveReport
-
+from typing import Dict
 # 城堡
 class Hive():
 
@@ -106,13 +106,13 @@ class Hive():
         return self._max_march_num
 
     def random_teleport(self, empty_cord):
-        self.teleport(random.choice(empty_cord), is_random=True)
+        self.teleport(random.choice(empty_cord), empty_cord, is_random=True)
 
-    def teleport(self, new_cord, is_random=False):
+    def teleport(self, new_cord, empty_cord, is_random=False):
         if self._tel_times == 0 and is_random == False:
             raise Exception('no teleport times.')
 
-        if not common.check_cord_valid(new_cord):
+        if not common.check_cord_valid(new_cord, empty_cord):
             raise Exception('teleport position invalid.')
 
         # 计算迁城次数

@@ -24,7 +24,6 @@ class Rally(Action):
         return self._target_id
 
     def do(self, hive):
-        print(hive.get_using_march_num(), hive.get_max_march_num())
         hive.attack(self._troops_num)
         return RallyWaiting(
             hive_id=self._hive_id,

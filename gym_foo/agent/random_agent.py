@@ -36,7 +36,6 @@ class RandomAgent(Agent):
         empty_cord = set([(w, h) for w in range(width) for h in range(height)])
         empty_cord -= set([hive.get_cord() for hive in self_hives])
         empty_cord -= set([hive.get_cord() for hive in opp_hives])
-        print(towers)
         empty_cord -= set([tower.get_cord() for tower in towers])
         return empty_cord
 
