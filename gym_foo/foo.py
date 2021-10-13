@@ -57,7 +57,7 @@ if __name__ == "__main__":
     grid.render()
     time.sleep(sleeptime)
     is_start = True
-    agent_1 = QLearnAgent_V2(team=0)
+    agent_1 = QLearnAgent_V2(team=0, agent_model_path='./agent_model_v2/train_0/agent0.pkl')
     agent_2 = TowerRushAgent(team=1)
     while True:
         if is_start:

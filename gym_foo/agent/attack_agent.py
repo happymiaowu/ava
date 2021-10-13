@@ -216,7 +216,7 @@ class TowerRushAgent(Agent):
                 Attack(
                     hive_id=hive.get_id(),
                     target_cord=target.get_cord(),
-                    troops_num=random.randint(1, min(hive.get_max_troops_num(), hive.get_troops_num())),
+                    troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()),
                     target_type=Attack.TARGET_TYPE_TOWER if type(target) == Tower else Attack.TARGET_TYPE_HIVE,
                     target_id=target.get_id()
                 )
