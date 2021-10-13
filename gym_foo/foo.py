@@ -7,8 +7,7 @@ from gym_foo.agent.random_agent import RandomAgent
 from gym_foo.model.battlefield_detail import BattleField
 from gym_foo.agent.q_learning_agent_v2 import QLearnAgent_V2
 from gym_foo.agent.attack_agent import TowerRushAgent
-
-
+import os
 
 #main函数
 if __name__ == "__main__":
@@ -57,7 +56,8 @@ if __name__ == "__main__":
     grid.render()
     time.sleep(sleeptime)
     is_start = True
-    agent_1 = QLearnAgent_V2(team=0)
+    object_path = os.path.dirname(__file__)
+    agent_1 = QLearnAgent_V2(team=0, agent_model_path='./agent_model_v2/train_0/agent0.pkl')
     agent_2 = TowerRushAgent(team=1)
     while True:
         if is_start:

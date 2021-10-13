@@ -5,9 +5,10 @@ from gym import wrappers
 from gym_foo.agent.agent import Agent
 from gym_foo.agent.random_agent import RandomAgent
 from gym_foo.agent.q_learning_agent_v2 import QLearnAgent_V2
-from gym_foo.agent.attack_agent import TowerRushAgent
+from gym_foo.agent.attack_agent import TowerRushAgent, AttackTowerAgent, AttackMainTowerAgent
 from gym_foo.model.battlefield_detail import BattleField
 from gym_foo.Utils import *
+import random
 import os
 
 
@@ -17,8 +18,9 @@ gamma = 0.9
 agent_model_path = os.path.join(object_path, 'agent_model_v2/train_0/agent0.pkl')
 
 if __name__ == "__main__":
-    agent_0 = QLearnAgent_V2(team=0, agent_model_path=None)
-    agent_1 = TowerRushAgent(team=1)
+    agent_0 = QLearnAgent_V2(team=0, agent_model_path=agent_model_path)
+    agent_1 = random.choice([TowerRushAgent(team=1), AttackTowerAgent(team=1), AttackMainTowerAgent(team=1)])
+
     for iter in range(200):
         grid = gym.make('ava-v1')
         # grid = wrappers.Monitor(grid, './videos', force=True)  # 记录回放动画
