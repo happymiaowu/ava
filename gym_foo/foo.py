@@ -6,7 +6,7 @@ from gym_foo.agent.agent import Agent
 from gym_foo.agent.random_agent import RandomAgent
 from gym_foo.model.battlefield_detail import BattleField
 from gym_foo.agent.q_learning_agent_v2 import QLearnAgent_V2
-from gym_foo.agent.attack_agent import AttackTowerAgent
+from gym_foo.agent.attack_agent import TowerRushAgent
 
 
 
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     time.sleep(sleeptime)
     is_start = True
     agent_1 = QLearnAgent_V2(team=0)
-    agent_2 = AttackTowerAgent(team=1)
+    agent_2 = TowerRushAgent(team=1)
     while True:
         if is_start:
             state, score, is_terminate, detail = grid.initial_state()

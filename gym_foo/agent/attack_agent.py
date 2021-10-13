@@ -179,7 +179,6 @@ class TowerRushAgent(Agent):
         empty_cord = set([(w, h) for w in range(width) for h in range(height)])
         empty_cord -= set([hive.get_cord() for hive in self_hives])
         empty_cord -= set([hive.get_cord() for hive in opp_hives])
-        print(towers)
         empty_cord -= set([tower.get_cord() for tower in towers])
         return empty_cord
 
@@ -192,7 +191,9 @@ class TowerRushAgent(Agent):
         i = 0
         for hive in detail.get_self_hives():
             if self.is_march_num_full(hive):
-                    continue
+                continue
+            if hive.get_troops_num() == 0:
+                continue
             # 不在最近的范围内且能移， 尝试往主塔移
             if hive.get_cord() not in self.nearest_set and hive.get_teleport_times() > 0:
                 while i < len(self.nearest_list):
