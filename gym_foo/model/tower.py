@@ -60,13 +60,13 @@ class Tower():
         return self._cord
 
     def add_reinforce(self, march: SingleMarch):
-        is_found = False
-        for troops in self._troops.get_troops_list():
-            if troops.get_hive_id() == march.get_hive_id():
-                troops.set_troops_num(troops.get_troops_num() + march.get_troops_num())
-                is_found = True
-        if not is_found:
-            self._troops.add_troops(Troops(march.get_hive_id(), march.get_troops_num()))
+        # is_found = False
+        # for troops in self._troops.get_troops_list():
+        #     if troops.get_hive_id() == march.get_hive_id():
+        #         troops.set_troops_num(troops.get_troops_num() + march.get_troops_num())
+        #         is_found = True
+        # if not is_found:
+        self._troops.add_troops(Troops(march.get_hive_id(), march.get_troops_num()))
 
     # 迁城导致守军回家
     def kick_march(self, hive: Hive) -> None:
