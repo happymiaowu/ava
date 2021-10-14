@@ -59,14 +59,8 @@ class Tower():
     def get_cord(self):
         return self._cord
 
-    def add_reinforce(self, march: SingleMarch):
-        # is_found = False
-        # for troops in self._troops.get_troops_list():
-        #     if troops.get_hive_id() == march.get_hive_id():
-        #         troops.set_troops_num(troops.get_troops_num() + march.get_troops_num())
-        #         is_found = True
-        # if not is_found:
-        self._troops.add_troops(Troops(march.get_hive_id(), march.get_troops_num()))
+    def add_reinforce(self, march: SingleMarch, hive: Hive):
+        self._troops.add_troops(Troops(march.get_hive_id(), march.get_troops_num()), hive)
 
     # 迁城导致守军回家
     def kick_march(self, hive: Hive) -> None:
@@ -132,7 +126,8 @@ class Tower():
             score=self._score_per_round,
             cord=self._cord,
             occupied=self._occupied,
-            troops=None
+            troops=None,
+            is_wonder=self._is_wonder
         )
 
     def __repr__(self):
@@ -141,5 +136,7 @@ class Tower():
             'cord': self._cord,
             'is_occupied': self._occupied,
             'who_occupied': self._team,
-            'troops': self._troops
+            'troops': self._troops,
+            'is_wonder': self._is_wonder,
+            'score_per_round': self._score_per_round
         })

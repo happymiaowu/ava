@@ -44,7 +44,7 @@ def occupied_tower(tower: Tower, march: March, hive_dict: Dict[str, Hive]):
         march.occupied_tower(tower)
         return [], None
     elif tower.who_occupied() == int(march.get_hive_id().split('_')[0]) and type(march) == SingleMarch:
-        tower.add_reinforce(march)
+        tower.add_reinforce(march, hive_dict[march.get_hive_id()])
         return [], None
     elif tower.who_occupied() == int(march.get_hive_id().split('_')[0]) and type(march) != SingleMarch:
         # 原地解散

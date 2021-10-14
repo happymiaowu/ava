@@ -86,6 +86,9 @@ class March():
         if hive.get_cord == self.get_target_cord():
             return
 
+        self._type = March.TYPE_BACK
+        self._target_type = March.TARGET_TYPE_HIVE
+        self._target_id = hive.get_id()
         self._start_cord, self._target_cord = self._target_cord, self._start_cord
 
     def get_hiding_result(self):

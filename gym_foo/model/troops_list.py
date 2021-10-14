@@ -1,7 +1,6 @@
 from gym_foo.model.troops import Troops
 from typing import List
 
-
 class TroopsList:
 
     def __init__(self, troops_list: List[Troops], header_hive_id):
@@ -17,8 +16,15 @@ class TroopsList:
                 return True
         return False
 
-    def add_troops(self, troops: Troops):
-        self._troops_list.append(troops)
+    def add_troops(self, new_troops: Troops, hive):
+        is_found = False
+        for troops in self._troops_list:
+            if troops.get_hive_id() == new_troops.get_hive_id():
+                troops.set_troops_num(troops.get_troops_num() + new_troops.get_troops_num())
+                hive.decr_march_num()
+                is_found = True
+        if not is_found:
+            self._troops_list.append(new_troops)
 
     def remove_troops(self, hive_id):
         troops_list = []
