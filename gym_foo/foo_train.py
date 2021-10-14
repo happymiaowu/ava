@@ -18,15 +18,16 @@ gamma = 0.9
 agent_model_path = os.path.join(object_path, 'agent_model_v2/train_0/agent0.pkl')
 
 if __name__ == "__main__":
-    agent_0 = QLearnAgent_V2(team=0, agent_model_path=agent_model_path)
-    agent_1 = random.choice([TowerRushAgent(team=1), AttackTowerAgent(team=1), AttackMainTowerAgent(team=1)])
-
-    for iter in range(200):
+    win = 0
+    total = 0
+    for iter in range(500):
         grid = gym.make('ava-v1')
         # grid = wrappers.Monitor(grid, './videos', force=True)  # 记录回放动画
         grid.reset()
         # grid.render()
         is_start = True
+        agent_0 = QLearnAgent_V2(team=0, agent_model_path=agent_model_path)
+        agent_1 = AttackMainTowerAgent(team=1)
         while True:
             if is_start:
                 state, score, is_terminate, detail = grid.initial_state()
@@ -65,13 +66,18 @@ if __name__ == "__main__":
             agent_0.qfunc[key] = agent_0.qfunc.get(key, 0.0) + alpha * (agent0_r0 + gamma * agent_0.qfunc.get(key, 0.0) - agent_0.qfunc.get(key, 0.0))
             if is_terminate:
                 agent_0.save_agent_model(agent_model_path)
-                print('Over, score:', score, detail)
-                print(detail.get_battle_reports())
-                print(detail_for_agent0.get_scout_reports())
-                print(detail_for_agent1.get_scout_reports())
+                # print('Over, score:', score, detail)
+                s0, s1 = detail.get_score()
+                if s0 >= s1:
+                    win += 1
+                total += 1
+                print('iter: %d, score: %s, win: %d, total: %d, win_rate: %f, beat: %s' % (iter, str(detail.get_score()), win, total, win / total, type(agent_1)))
+                # print(detail.get_battle_reports())
+                # print(detail_for_agent0.get_scout_reports())
+                # print(detail_for_agent1.get_scout_reports())
                 break
 
             else:
-                print('Round, score:', score, detail)
-
+                # print('Round, score:', score, detail)
+                pass
 

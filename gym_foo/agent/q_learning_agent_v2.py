@@ -19,6 +19,7 @@ from gym_foo.model.action.join_rally import JoinRally
 from gym_foo.model.action.rally_cancel import RallyCancel
 from gym_foo.Utils import *
 import pickle
+import math
 import os
 
 
@@ -27,7 +28,9 @@ class QLearnAgent_V2(Agent):
     def __init__(self, team: object, agent_model_path: object = None) -> object:
         super().__init__(team)
         self.qfunc = dict()
-        self.valid_action = ['attack_tower_full',
+        self.valid_action = ['attack_wonder_full',
+                             'attack_wonder_half',
+                             'attack_tower_full',
                              'attack_tower_half',
                              'attack_hive_full',
                              'attack_hive_half',
@@ -35,7 +38,7 @@ class QLearnAgent_V2(Agent):
                              'reinforce_tower_half',
                              'reinforce_hive',
                              'rally_tower_full',
-                             'rally_tower_half'
+                             'rally_tower_half',
                              'rally_hive_full',
                              'rally_hive_half',
                              'scout_tower',
@@ -121,6 +124,7 @@ class QLearnAgent_V2(Agent):
     def load_agent_model(self, agent_model_path):
         with open(agent_model_path, "rb") as rf:
             self.qfunc = pickle.load(rf)
+        print(self.qfunc)
 
     def generate_action(self, state, score, detail: BattleField):
         action_list = []
@@ -133,21 +137,37 @@ class QLearnAgent_V2(Agent):
             # random_action = random.choice(self.valid_action)
             r, s = get_status_rewards_from_detail_v2(detail, hive)
             random_action = self.epsilon_greedy(s, 0.2)
-            print(hive.get_id(), random_action)
-
-            if random_action.startswith('attack_tower'):
+            if random_action.startswith('attack_wonder'):
                 if self.is_march_num_full(hive):
                     continue
                 if hive.get_troops_num() == 0:
                     continue
-                target = random.choice(tower)
+                target = random.choice(list(filter(lambda x: x.is_wonder(), detail.get_towers())))
                 if type(target) == Tower and target.who_occupied() == self._team:
                     continue
                 action_list.append(
                     Attack(
                         hive_id=hive.get_id(),
                         target_cord=target.get_cord(),
-                        troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith('full') else min(hive.get_max_troops_num(), hive.get_troops_num()) // 2,
+                        troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith('full') else math.ceil(min(hive.get_max_troops_num(), hive.get_troops_num()) / 2),
+                        target_type=Attack.TARGET_TYPE_TOWER,
+                        target_id=target.get_id()
+                    )
+                )
+
+            if random_action.startswith('attack_tower'):
+                if self.is_march_num_full(hive):
+                    continue
+                if hive.get_troops_num() == 0:
+                    continue
+                target = random.choice(list(filter(lambda x: not x.is_wonder(), detail.get_towers())))
+                if type(target) == Tower and target.who_occupied() == self._team:
+                    continue
+                action_list.append(
+                    Attack(
+                        hive_id=hive.get_id(),
+                        target_cord=target.get_cord(),
+                        troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith('full') else math.ceil(min(hive.get_max_troops_num(), hive.get_troops_num()) / 2),
                         target_type=Attack.TARGET_TYPE_TOWER,
                         target_id=target.get_id()
                     )
@@ -163,7 +183,7 @@ class QLearnAgent_V2(Agent):
                     Attack(
                         hive_id=hive.get_id(),
                         target_cord=target.get_cord(),
-                        troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith('full') else min(hive.get_max_troops_num(), hive.get_troops_num()) // 2,
+                        troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith('full') else math.ceil(min(hive.get_max_troops_num(), hive.get_troops_num()) / 2),
                         target_type=Attack.TARGET_TYPE_HIVE,
                         target_id=target.get_id()
                     )
@@ -181,8 +201,7 @@ class QLearnAgent_V2(Agent):
                         hive_id=hive.get_id(),
                         target_id=target.get_id(),
                         target_type=Reinforce.TARGET_TYPE_TOWER,
-                        troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith(
-                            'full') else min(hive.get_max_troops_num(), hive.get_troops_num()) // 2
+                        troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith('full') else math.ceil(min(hive.get_max_troops_num(), hive.get_troops_num()) / 2)
                     )
                 )
 
@@ -213,8 +232,7 @@ class QLearnAgent_V2(Agent):
                         target_id=target.get_id(),
                         target_type=Rally.TARGET_TYPE_TOWER,
                         pending_times=10,
-                        troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith(
-                            'full') else min(hive.get_max_troops_num(), hive.get_troops_num()) // 2
+                        troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith('full') else math.ceil(min(hive.get_max_troops_num(), hive.get_troops_num()) / 2)
                     )
                 )
             if random_action.startswith('rally_hive'):
@@ -229,8 +247,7 @@ class QLearnAgent_V2(Agent):
                         target_id=target.get_id(),
                         target_type=Rally.TARGET_TYPE_HIVE,
                         pending_times=10,
-                        troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith(
-                            'full') else min(hive.get_max_troops_num(), hive.get_troops_num()) // 2
+                        troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith('full') else math.ceil(min(hive.get_max_troops_num(), hive.get_troops_num()) / 2)
                     )
                 )
 
@@ -362,8 +379,7 @@ class QLearnAgent_V2(Agent):
                 action_list.append(JoinRally(
                     hive_id=hive.get_id(),
                     rally_id=target.get_id(),
-                    troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith(
-                            'full') else min(hive.get_max_troops_num(), hive.get_troops_num()) // 2
+                    troops_num=min(hive.get_max_troops_num(), hive.get_troops_num()) if random_action.endswith('full') else math.ceil(min(hive.get_max_troops_num(), hive.get_troops_num()) / 2)
                 ))
 
             if random_action == 'cancel_rally':
@@ -376,7 +392,7 @@ class QLearnAgent_V2(Agent):
                     hive_id=hive.get_id(),
                     rally_id=target.get_id()
                 ))
-
+            # print(hive.get_id(), random_action)
         return random_action, ActionList(team=self._team, action_list=action_list)
 
 

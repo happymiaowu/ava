@@ -37,7 +37,6 @@ class AttackOppAgent(Agent):
         empty_cord = set([(w, h) for w in range(width) for h in range(height)])
         empty_cord -= set([hive.get_cord() for hive in self_hives])
         empty_cord -= set([hive.get_cord() for hive in opp_hives])
-        print(towers)
         empty_cord -= set([tower.get_cord() for tower in towers])
         return empty_cord
 
@@ -84,7 +83,6 @@ class AttackTowerAgent(Agent):
         empty_cord = set([(w, h) for w in range(width) for h in range(height)])
         empty_cord -= set([hive.get_cord() for hive in self_hives])
         empty_cord -= set([hive.get_cord() for hive in opp_hives])
-        print(towers)
         empty_cord -= set([tower.get_cord() for tower in towers])
         return empty_cord
 
@@ -96,7 +94,9 @@ class AttackTowerAgent(Agent):
 
         for hive in detail.get_self_hives():
             if self.is_march_num_full(hive):
-                    continue
+                continue
+            if hive.get_troops_num() == 0:
+                continue
             # 就算是己方的，也往里打，因为会自动被当作增援
             target = random.choice(tower)
             action_list.append(
@@ -130,7 +130,6 @@ class AttackMainTowerAgent(Agent):
         empty_cord = set([(w, h) for w in range(width) for h in range(height)])
         empty_cord -= set([hive.get_cord() for hive in self_hives])
         empty_cord -= set([hive.get_cord() for hive in opp_hives])
-        print(towers)
         empty_cord -= set([tower.get_cord() for tower in towers])
         return empty_cord
 
@@ -142,7 +141,9 @@ class AttackMainTowerAgent(Agent):
 
         for hive in detail.get_self_hives():
             if self.is_march_num_full(hive):
-                    continue
+                continue
+            if hive.get_troops_num() == 0:
+                continue
             # 就算是己方的，也往里打，因为会自动被当作增援
             target = tower[0]
             action_list.append(

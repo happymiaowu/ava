@@ -8,6 +8,7 @@ from gym_foo.model.hide_hive import HideHive
 from gym_foo.model.troops_list import TroopsList
 from gym_foo.model.report.scout_hive_report import ScoutHiveReport
 from typing import Dict
+
 # 城堡
 class Hive():
 
@@ -96,14 +97,17 @@ class Hive():
             header_hive_id=self._id
         )
 
-    def add_rein_troops(self, march: SingleMarch):
-        self._rein_troops.add_troops(Troops(march.get_hive_id(), march.get_troops_num()))
+    def add_rein_troops(self, march: SingleMarch, hive):
+        self._rein_troops.add_troops(Troops(march.get_hive_id(), march.get_troops_num()), hive)
 
     def get_using_march_num(self):
         return self._using_march_num
 
     def get_max_march_num(self):
         return self._max_march_num
+
+    def decr_march_num(self):
+        self._using_march_num -= 1
 
     def random_teleport(self, empty_cord):
         self.teleport(random.choice(empty_cord), empty_cord, is_random=True)
@@ -203,7 +207,6 @@ class Hive():
         return march
 
     def recall_suddenly(self, troops_num):
-        print('recall suddenly')
         self._using_march_num -= 1
         self._troops_num += troops_num
 

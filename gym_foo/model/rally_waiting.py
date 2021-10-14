@@ -36,8 +36,8 @@ class RallyWaiting():
     def get_troops(self):
         return self._troops
 
-    def join(self, hive_id, troops_num):
-        self._troops.add_troops(Troops(hive_id=hive_id, troops_num=troops_num))
+    def join(self, hive_id, troops_num, hive: Hive):
+        self._troops.add_troops(Troops(hive_id=hive_id, troops_num=troops_num), hive)
 
     def get_pending_times(self):
         return self._pending_times

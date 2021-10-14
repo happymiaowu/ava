@@ -98,7 +98,7 @@ class AvaEnv(gym.Env):
         self.tower_cord = [(4, 4), (8, 8)]
         # 塔生成
         for cord in self.tower_cord:
-            self.tower.append(Tower(tower_id=str(len(self.tower)), score=10, cord=cord, is_wonder=False))
+            self.tower.append(Tower(tower_id=str(len(self.tower)), score=20, cord=cord, is_wonder=False))
 
         self.zombie_cord = [(1, 1), (11, 11)]
 
@@ -401,13 +401,13 @@ class AvaEnv(gym.Env):
                     if march.get_target_id() not in self.get_rally_dict():
                         self.logs.write('March %s join rally %s failed cause rally is disappear.\n' % (march, march.get_target_id()))
                         continue
-                    self.get_rally_dict()[march.get_target_id()].join(hive_id=march.get_hive_id(), troops_num=march.get_troops_num())
+                    self.get_rally_dict()[march.get_target_id()].join(hive_id=march.get_hive_id(), troops_num=march.get_troops_num(), hive=hive)
                     self.logs.write('March %s join rally %s .\n' % (march, march.get_target_id()))
                     is_deal = True
 
                 # 增援城堡成功
                 if march.get_type() == March.TYPE_REINFORCE and hive.get_cord() == march.get_target_cord():
-                    hive.add_rein_troops(march)
+                    hive.add_rein_troops(march, hive)
                     self.logs.write('March %s reinforce hive %s.\n' % (march, march.get_target_id()))
                     is_deal = True
 
@@ -431,7 +431,7 @@ class AvaEnv(gym.Env):
 
             # 行军发现目标已消失
             if not is_deal:
-                print('target is disappear')
+                # print('target is disappear')
                 hive = self.get_hive_dict()[march.get_hive_id()]
                 new_march_list.append(SingleMarch(
                     start_cord=march.get_target_cord(),
@@ -451,7 +451,7 @@ class AvaEnv(gym.Env):
             self.teleport_recall(hive_id=hive_id)
 
 
-        print(self.round_left)
+        # print(self.round_left)
         if self.round_left == 0:
             return self.map, 0, True, BattleFieldTotal(
                 width=self.map_width,
@@ -486,7 +486,6 @@ class AvaEnv(gym.Env):
 
 
     def reset(self):
-        print('reset')
         return self.map
 
     def render(self, mode='human', close=False):
@@ -591,7 +590,7 @@ class AvaEnv(gym.Env):
             march_line.set_color(*line_color)
             self.viewer.add_onetime(march_line)
 
-            march_point = rendering.make_circle(self.GRID_WIDTH / 8.)
+            march_point = rendering.make_circle(self.GRID_WIDTH / 10. if type(march) == SingleMarch else self.GRID_WIDTH / 5.)
             march_point.add_attr(rendering.Transform(translation=(self.grid2cord(*march.get_now_cord()))))
             march_point.set_color(*line_color)
             self.viewer.add_onetime(march_point)
