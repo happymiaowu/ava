@@ -70,8 +70,10 @@ if __name__ == "__main__":
             key1 = ["%s_%s" % (agent0_s1, a1) for agent0_s1, a1 in zip(agent0_s1_list, a1_list)]
             key = ["%s_%s" % (agent0_s0, agent0_a0) for agent0_s0, agent0_a0 in zip(agent0_s0_list, agent0_a0_list)]
             # 利用qlearning方法更新值函数
+
             for k, k1 in zip(key, key1):
                 agent_0.qfunc[k] = agent_0.qfunc.get(k, 0.0) + alpha * (agent0_r0 + gamma * agent_0.qfunc.get(k1, 0.0) - agent_0.qfunc.get(k, 0.0))
+
             if is_terminate:
                 agent_0.save_agent_model(agent_model_path)
                 # print('Over, score:', score, detail)
