@@ -50,6 +50,8 @@ class RandomAgent(Agent):
             if random_action == 'attack':
                 if self.is_march_num_full(hive):
                     continue
+                if hive.get_troops_num() == 0:
+                    continue
                 target = random.choice(tower + opp_hives)
                 if type(target) == Tower and target.who_occupied() == self._team:
                     continue
@@ -65,6 +67,8 @@ class RandomAgent(Agent):
             if random_action == 'reinforce':
                 if self.is_march_num_full(hive):
                     continue
+                if hive.get_troops_num() == 0:
+                    continue
                 target = random.choice(tower + detail.get_self_hives())
                 if type(target) == Tower and target.who_occupied() != self._team:
                     continue
@@ -78,6 +82,8 @@ class RandomAgent(Agent):
                 )
             if random_action == 'rally':
                 if self.is_march_num_full(hive):
+                    continue
+                if hive.get_troops_num() == 0:
                     continue
                 target =random.choice(tower + detail.get_opp_hives())
                 if type(target) == Tower and target.who_occupied() == self._team:
@@ -155,6 +161,8 @@ class RandomAgent(Agent):
 
             if random_action == 'join_rally':
                 if self.is_march_num_full(hive):
+                    continue
+                if hive.get_troops_num() == 0:
                     continue
                 if len(detail.get_self_rallies()) == 0:
                     continue

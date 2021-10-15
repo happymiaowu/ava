@@ -112,6 +112,8 @@ class QLearnAgent(Agent):
                 target = random.choice(tower + opp_hives)
                 if type(target) == Tower and target.who_occupied() == self._team:
                     continue
+                if hive.get_troops_num() == 0:
+                    continue
                 action_list.append(
                     Attack(
                         hive_id=hive.get_id(),
@@ -127,6 +129,8 @@ class QLearnAgent(Agent):
                 target = random.choice(tower + detail.get_self_hives())
                 if type(target) == Tower and target.who_occupied() != self._team:
                     continue
+                if hive.get_troops_num() == 0:
+                    continue
                 action_list.append(
                     Reinforce(
                         hive_id=hive.get_id(),
@@ -140,6 +144,8 @@ class QLearnAgent(Agent):
                     continue
                 target =random.choice(tower + detail.get_opp_hives())
                 if type(target) == Tower and target.who_occupied() == self._team:
+                    continue
+                if hive.get_troops_num() == 0:
                     continue
                 action_list.append(
                     Rally(
@@ -225,6 +231,8 @@ class QLearnAgent(Agent):
                     if march.get_hive_id() == hive.get_id() and march.get_target_type() == March.TARGET_TYPE_RALLY and march.get_target_id() == target.get_id():
                         is_already_join = True
                 if is_already_join:
+                    continue
+                if hive.get_troops_num() == 0:
                     continue
                 action_list.append(JoinRally(
                     hive_id=hive.get_id(),

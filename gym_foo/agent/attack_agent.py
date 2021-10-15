@@ -49,7 +49,9 @@ class AttackOppAgent(Agent):
         for hive in detail.get_self_hives():
 
             if self.is_march_num_full(hive):
-                    continue
+                continue
+            if hive.get_troops_num() == 0:
+                continue
             # 朝着对方城池打
             target = random.choice(opp_hives)
             action_list.append(
