@@ -16,7 +16,8 @@ class Tower():
                  cord: Tuple[int, int],
                  occupied: bool = False,
                  is_wonder: bool = False,
-                 troops: TroopsList = None
+                 troops: TroopsList = None,
+                 team=None
                  ):
         self._id = tower_id
         self._score_per_round = score
@@ -24,7 +25,7 @@ class Tower():
         self._occupied = occupied
         self._troops = troops
         self._is_wonder = is_wonder
-        self._team = None
+        self._team = team
 
     def get_id(self):
         return self._id
@@ -47,7 +48,8 @@ class Tower():
             cord=self._cord,
             team=self._team,
             round=round,
-            rein_troops=self._troops
+            rein_troops=self._troops,
+            occupied=self._occupied
         )
 
     # 设置占领
@@ -127,7 +129,8 @@ class Tower():
             cord=self._cord,
             occupied=self._occupied,
             troops=None,
-            is_wonder=self._is_wonder
+            is_wonder=self._is_wonder,
+            team=self._team
         )
 
     def __repr__(self):

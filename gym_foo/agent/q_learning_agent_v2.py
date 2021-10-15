@@ -28,10 +28,10 @@ class QLearnAgent_V2(Agent):
     def __init__(self, team: object, agent_model_path: object = None) -> object:
         super().__init__(team)
         self.qfunc = dict()
-        self.valid_action = ['attack_wonder_full',
-                             'attack_wonder_half',
-                             'attack_tower_full',
+        self.valid_action = ['attack_tower_full',
                              'attack_tower_half',
+                             'attack_wonder_full',
+                             'attack_wonder_half',
                              'attack_hive_full',
                              'attack_hive_half',
                              'reinforce_tower_full',
@@ -48,7 +48,6 @@ class QLearnAgent_V2(Agent):
                              'teleport_wonder_2',
                              'teleport_tower_1',
                              'teleport_tower_2',
-                             'teleport_random',
                              'recall_march',
                              'recall_occupied',
                              'join_rally_full',
@@ -124,18 +123,19 @@ class QLearnAgent_V2(Agent):
     def load_agent_model(self, agent_model_path):
         with open(agent_model_path, "rb") as rf:
             self.qfunc = pickle.load(rf)
-        print(self.qfunc)
+        #print(self.qfunc)
 
     def generate_action(self, state, score, detail: BattleField):
         action_list = []
         tower = detail.get_towers()
         opp_hives = detail.get_opp_hives()
         empty_cord = self.get_empty_cord(detail.get_width(), detail.get_height(), detail.get_self_hives(), detail.get_opp_hives(), detail.get_towers())
-
+        hive_action_order = []
         for hive in detail.get_self_hives():
 
             # random_action = random.choice(self.valid_action)
             r, s = get_status_rewards_from_detail_v2(detail, hive)
+            # print(s)
             random_action = self.epsilon_greedy(s, 0.2)
             if random_action.startswith('attack_wonder'):
                 if self.is_march_num_full(hive):
@@ -392,7 +392,8 @@ class QLearnAgent_V2(Agent):
                     hive_id=hive.get_id(),
                     rally_id=target.get_id()
                 ))
+            hive_action_order.append(random_action)
             # print(hive.get_id(), random_action)
-        return random_action, ActionList(team=self._team, action_list=action_list)
+        return hive_action_order, ActionList(team=self._team, action_list=action_list)
 
 

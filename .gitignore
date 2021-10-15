@@ -3,3 +3,5 @@ venv
 .idea
 gym_foo/logs/*
 gym_foo/videos/*
+gym_foo/agent_model_v2/train_0/
+gym_foo/test.py
