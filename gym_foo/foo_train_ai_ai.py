@@ -63,7 +63,7 @@ if __name__ == "__main__":
         key1 = "%s_%s" % (agent0_s1, a1)
         key = "%s_%s" % (agent0_s0, agent0_a0)
         # 利用qlearning方法更新值函数
-        agent_0.qfunc[key] = agent_0.qfunc.get(key, 0.0) + alpha * (agent0_r0 + gamma * agent_0.qfunc.get(key, 0.0) - agent_0.qfunc.get(key, 0.0))
+        agent_0.qfunc[key] = agent_0.qfunc.get(key, 0.0) + alpha * (agent0_r0 + gamma * agent_0.qfunc.get(key1, 0.0) - agent_0.qfunc.get(key, 0.0))
 
         # train agent1
         # s1处的最大动作
@@ -72,7 +72,7 @@ if __name__ == "__main__":
         key = "%s_%s" % (agent1_s0, agent1_a0)
         # 利用qlearning方法更新值函数
         agent_1.qfunc[key] = agent_1.qfunc.get(key, 0.0) + alpha * (
-                    agent1_r0 + gamma * agent_1.qfunc.get(key, 0.0) - agent_1.qfunc.get(key, 0.0))
+                    agent1_r0 + gamma * agent_1.qfunc.get(key1, 0.0) - agent_1.qfunc.get(key, 0.0))
 
         if is_terminate:
             agent_0.save_agent_model(agent_model_path_0)
